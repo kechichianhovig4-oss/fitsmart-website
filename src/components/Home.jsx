@@ -431,7 +431,7 @@ function HomePage() {
                       </p>
                       <p className="flex items-center justify-center md:justify-start">
                         <span className="material-symbols-outlined mr-2 text-red-600">phone</span>
-                        <span>(123) 456-7890</span>
+                        <span>(316) 910 8707</span>
                       </p>
                       <p className="flex items-center justify-center md:justify-start">
                         <span className="material-symbols-outlined mr-2 text-red-600">location_on</span>
