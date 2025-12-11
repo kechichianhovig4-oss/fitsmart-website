@@ -183,7 +183,7 @@ function HomePage() {
                   <div className="flex flex-col gap-1">
                     <h3 className="text-gray-900 text-lg font-bold leading-tight">Group Fitness Classes</h3>
                     <p className="flex items-baseline gap-1 text-gray-900">
-                      <span className="text-4xl font-black leading-tight tracking-[-0.033em]">$30</span>
+                      <span className="text-4xl font-black leading-tight tracking-[-0.033em]">$100</span>
                       <span className="text-base font-bold leading-tight">/class</span>
                     </p>
                   </div>
@@ -206,7 +206,7 @@ function HomePage() {
                   <div className="flex flex-col gap-1">
                     <h3 className="text-gray-900 text-lg font-bold leading-tight">Online Coaching</h3>
                     <p className="flex items-baseline gap-1 text-gray-900">
-                      <span className="text-4xl font-black leading-tight tracking-[-0.033em]">$50</span>
+                      <span className="text-4xl font-black leading-tight tracking-[-0.033em]">$250</span>
                       <span className="text-base font-bold leading-tight">/month</span>
                     </p>
                   </div>
