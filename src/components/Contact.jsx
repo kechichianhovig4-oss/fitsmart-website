@@ -4,16 +4,23 @@ import { Link, useNavigate } from 'react-router-dom';
 function Contact() {
   const navigate = useNavigate();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // NEW: State for mobile menu
 
   // Navigation handler with delay
   const handleNavClick = (path) => {
     setIsNavigating(true);
+    setIsMobileMenuOpen(false); // NEW: Close mobile menu when navigating
     
     // Add delay before navigation
     setTimeout(() => {
       navigate(path);
       setIsNavigating(false);
     }, 300); // 300ms delay
+  };
+
+  // NEW: Toggle mobile menu
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
@@ -66,8 +73,6 @@ function Contact() {
                   >
                     About
                   </Link>
-                  
-                  
                 </div>
                 <Link 
                   to="/Contact" 
@@ -77,12 +82,57 @@ function Contact() {
                   <span className="truncate">Book Now</span>
                 </Link>
               </div>
+              
+              {/* Mobile Menu Button */}
               <div className="lg:hidden">
-                <button className="text-gray-900">
-                  <span className="material-symbols-outlined">menu</span>
+                <button 
+                  onClick={toggleMobileMenu} // NEW: Added click handler
+                  className="text-gray-900 p-2"
+                >
+                  <span className="material-symbols-outlined">
+                    {isMobileMenuOpen ? 'close' : 'menu'} {/* NEW: Changes icon based on state */}
+                  </span>
                 </button>
               </div>
             </div>
+            
+            {/* Mobile Navigation Menu - NEW */}
+            {isMobileMenuOpen && (
+              <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
+                <div className="px-4 py-6 space-y-4">
+                  <div className="space-y-3">
+                    <Link 
+                      to="/HomePage" 
+                      onClick={() => handleNavClick('/HomePage')}
+                      className="block px-2 py-3 text-gray-900 text-sm font-medium leading-normal hover:text-red-600 transition-colors"
+                    >
+                      Home
+                    </Link>
+                    <Link 
+                      to="/Services" 
+                      onClick={() => handleNavClick('/Services')}
+                      className="block px-2 py-3 text-gray-900 text-sm font-medium leading-normal hover:text-red-600 transition-colors border-t border-gray-100"
+                    >
+                      Services
+                    </Link>
+                    <Link 
+                      to="/AboutMe" 
+                      onClick={() => handleNavClick('/AboutMe')}
+                      className="block px-2 py-3 text-gray-900 text-sm font-medium leading-normal hover:text-red-600 transition-colors border-t border-gray-100"
+                    >
+                      About
+                    </Link>
+                  </div>
+                  <Link 
+                    to="/Contact" 
+                    onClick={() => handleNavClick('/Contact')}
+                    className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-red-600 text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-red-700 transition-all mt-4"
+                  >
+                    <span className="truncate">Book Now</span>
+                  </Link>
+                </div>
+              </div>
+            )}
           </header>
 
 
