@@ -64,93 +64,125 @@ function Contact() {
 
   // FIXED: Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitMessage('');
-    setMessageType('');
+  e.preventDefault();
+  setIsSubmitting(true);
+  setSubmitMessage('');
+  setMessageType('');
 
-    // Validate required fields
-    if (!formData['full-name'] || !formData.email) {
-      setMessageType('error');
-      setSubmitMessage('Please fill in all required fields (Name and Email).');
-      setIsSubmitting(false);
-      return;
+  // Validate required fields
+  if (!formData['full-name'] || !formData.email) {
+    setMessageType('error');
+    setSubmitMessage('Please fill in all required fields (Name and Email).');
+    setIsSubmitting(false);
+    return;
+  }
+
+  try {
+    console.log('Attempting to send email...');
+
+    // FIXED: Include recipient email properly
+    const templateParams = {
+      to_email: 'kechichianhovig4@gmail.com', // Add this line
+      from_name: formData['full-name'],
+      from_email: formData.email,
+      phone: formData['phone-number'] || 'Not provided',
+      fitness_level: formData['fitness-level'],
+      interests: formData.interest.join(', ') || 'Not specified',
+      availability: formData.availability,
+      goals: formData.goals || 'Not specified',
+      injuries: formData.injuries || 'None',
+      how_found: formData['how-found'],
+      date: new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    };
+
+    console.log('Template params:', templateParams);
+
+    // Send email using EmailJS
+    const response = await emailjs.send(
+      'service_d8vjnve',
+      'template_maj7w8p',
+      templateParams
+    );
+
+    console.log('EmailJS Response:', response);
+
+    if (response.status === 200) {
+      setMessageType('success');
+      setSubmitMessage('Thank you! Your message has been sent successfully to Bennie. He will get back to you within 24 hours!');
+      
+      // Reset form
+      setFormData({
+        'full-name': '',
+        'email': '',
+        'phone-number': '',
+        'fitness-level': 'Beginner',
+        'interest': [],
+        'availability': 'Mornings',
+        'goals': '',
+        'injuries': '',
+        'how-found': 'Google'
+      });
+
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSubmitMessage('');
+        setMessageType('');
+      }, 5000);
     }
+  } catch (error) {
+    console.error('Detailed EmailJS Error:', error);
+    console.error('Error text:', error.text);
+    
+    setMessageType('error');
+    
+    if (error.text && error.text.includes('recipients address')) {
+      setSubmitMessage('Email configuration error. Setting up recipient email...');
+      
+      // Try alternative approach with different parameter name
+      try {
+        // Try with different parameter name for recipient
+        const altTemplateParams = {
+          to: 'kechichianhovig4@gmail.com',
+          reply_to: formData.email,
+          from_name: formData['full-name'],
+          from_email: formData.email,
+          phone: formData['phone-number'] || 'Not provided',
+          fitness_level: formData['fitness-level'],
+          interests: formData.interest.join(', ') || 'Not specified',
+          availability: formData.availability,
+          goals: formData.goals || 'Not specified',
+          injuries: formData.injuries || 'None',
+          how_found: formData['how-found'],
+          date: new Date().toLocaleString()
+        };
 
-    try {
-      console.log('Attempting to send email...');
-
-      // FIXED: Remove to_email from templateParams
-      const templateParams = {
-        from_name: formData['full-name'],
-        from_email: formData.email,
-        phone: formData['phone-number'] || 'Not provided',
-        fitness_level: formData['fitness-level'],
-        interests: formData.interest.join(', ') || 'Not specified',
-        availability: formData.availability,
-        goals: formData.goals || 'Not specified',
-        injuries: formData.injuries || 'None',
-        how_found: formData['how-found'],
-        date: new Date().toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-      };
-
-      console.log('Template params:', templateParams);
-
-      // Send email using EmailJS
-      const response = await emailjs.send(
-        'service_d8vjnve',
-        'template_maj7w8p',
-        templateParams
-      );
-
-      console.log('EmailJS Response:', response);
-
-      if (response.status === 200) {
-        setMessageType('success');
-        setSubmitMessage('Thank you! Your message has been sent successfully to Bennie. He will get back to you within 24 hours!');
+        const altResponse = await emailjs.send(
+          'service_d8vjnve',
+          'template_maj7w8p',
+          altTemplateParams
+        );
         
-        // Reset form
-        setFormData({
-          'full-name': '',
-          'email': '',
-          'phone-number': '',
-          'fitness-level': 'Beginner',
-          'interest': [],
-          'availability': 'Mornings',
-          'goals': '',
-          'injuries': '',
-          'how-found': 'Google'
-        });
-
-        // Clear success message after 5 seconds
-        setTimeout(() => {
-          setSubmitMessage('');
-          setMessageType('');
-        }, 5000);
+        console.log('Alternative attempt success:', altResponse);
+        setMessageType('success');
+        setSubmitMessage('Thank you! Your message has been sent successfully!');
+      } catch (altError) {
+        console.error('Alternative attempt failed:', altError);
+        setSubmitMessage('Please check your EmailJS service configuration. The recipient email should be set in the dashboard.');
       }
-    } catch (error) {
-      console.error('Detailed EmailJS Error:', error);
-      console.error('Error text:', error.text);
-      
-      setMessageType('error');
-      
-      if (error.text && error.text.includes('recipients address')) {
-        setSubmitMessage('Email configuration error. Please configure your email recipient in EmailJS dashboard.');
-      } else {
-        setSubmitMessage('Sorry, there was an error sending your message. Please try again or contact Bennie directly at fitsmartbennie@mail.com');
-      }
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      setSubmitMessage('Sorry, there was an error sending your message. Please try again or contact Bennie directly.');
     }
-  };
-
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   // Also update your EmailJS template to remove {{to_email}} reference
   // Use this updated template:
 
