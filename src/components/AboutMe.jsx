@@ -277,7 +277,7 @@ function AboutMe() {
                     <div className="mt-4 space-y-2 text-gray-600">
                       <p className="flex items-center justify-center md:justify-start">
                         <span className="material-symbols-outlined mr-2 text-red-600">email</span>
-                        <span>bennieEdmonson@fitsmart.com</span>
+                        <span>fitsmartbennie@mail.com</span>
                       </p>
                       <p className="flex items-center justify-center md:justify-start">
                         <span className="material-symbols-outlined mr-2 text-red-600">phone</span>
