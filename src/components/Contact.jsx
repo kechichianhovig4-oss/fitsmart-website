@@ -26,7 +26,7 @@ function Contact() {
     emailjs.init("FvpMZznqtxDjK8WXR");
   }, []);
 
-  // Navigation handlers (keep your existing code)
+  // Navigation handlers
   const handleNavClick = (path) => {
     setIsNavigating(true);
     setIsMobileMenuOpen(false);
@@ -41,7 +41,7 @@ function Contact() {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  // Handle form input changes (keep your existing code)
+  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     
@@ -62,7 +62,7 @@ function Contact() {
     }
   };
 
-  // UPDATED: Handle form submission with better error handling
+  // FIXED: Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -79,11 +79,9 @@ function Contact() {
 
     try {
       console.log('Attempting to send email...');
-      console.log('Form data:', formData);
 
-      // Prepare template parameters - match EXACTLY with your EmailJS template variables
+      // FIXED: Remove to_email from templateParams
       const templateParams = {
-        to_email: 'fitsmartbennie@mail.com',
         from_name: formData['full-name'],
         from_email: formData.email,
         phone: formData['phone-number'] || 'Not provided',
@@ -93,7 +91,6 @@ function Contact() {
         goals: formData.goals || 'Not specified',
         injuries: formData.injuries || 'None',
         how_found: formData['how-found'],
-        reply_to: formData.email,
         date: new Date().toLocaleDateString('en-US', {
           weekday: 'long',
           year: 'numeric',
@@ -105,8 +102,6 @@ function Contact() {
       };
 
       console.log('Template params:', templateParams);
-      console.log('Using Service ID:', 'service_d8vjnve');
-      console.log('Using Template ID:', 'template_maj7w8p');
 
       // Send email using EmailJS
       const response = await emailjs.send(
@@ -119,7 +114,7 @@ function Contact() {
 
       if (response.status === 200) {
         setMessageType('success');
-        setSubmitMessage('Thank you! Your message has been sent successfully. Bennie will get back to you within 24 hours!');
+        setSubmitMessage('Thank you! Your message has been sent successfully to Bennie. He will get back to you within 24 hours!');
         
         // Reset form
         setFormData({
@@ -142,19 +137,12 @@ function Contact() {
       }
     } catch (error) {
       console.error('Detailed EmailJS Error:', error);
-      console.error('Error code:', error.code);
       console.error('Error text:', error.text);
-      console.error('Error status:', error.status);
       
       setMessageType('error');
       
-      // Better error messages based on error type
-      if (error.text && error.text.includes('template')) {
-        setSubmitMessage('Template configuration error. Please check your EmailJS template setup.');
-      } else if (error.text && error.text.includes('service')) {
-        setSubmitMessage('Service configuration error. Please check your EmailJS service setup.');
-      } else if (error.status === 422) {
-        setSubmitMessage('Email configuration error. Please check that your EmailJS template variables match the form data.');
+      if (error.text && error.text.includes('recipients address')) {
+        setSubmitMessage('Email configuration error. Please configure your email recipient in EmailJS dashboard.');
       } else {
         setSubmitMessage('Sorry, there was an error sending your message. Please try again or contact Bennie directly at fitsmartbennie@mail.com');
       }
@@ -163,39 +151,8 @@ function Contact() {
     }
   };
 
-  // Also add this debug button temporarily to test EmailJS connection
-  const testEmailJSConnection = async () => {
-    console.log('Testing EmailJS connection...');
-    try {
-      // Test with minimal data
-      const testParams = {
-        to_email: 'fitsmartbennie@mail.com',
-        from_name: 'Test User',
-        from_email: 'test@example.com',
-        phone: '123-456-7890',
-        fitness_level: 'Beginner',
-        interests: 'Test Interest',
-        availability: 'Mornings',
-        goals: 'Test goals',
-        injuries: 'None',
-        how_found: 'Test',
-        reply_to: 'test@example.com',
-        date: new Date().toLocaleString()
-      };
-
-      const result = await emailjs.send(
-        'service_d8vjnve',
-        'template_maj7w8p',
-        testParams
-      );
-      console.log('Test email sent successfully:', result);
-      alert('Test email sent successfully! Check your inbox.');
-    } catch (error) {
-      console.error('Test email failed:', error);
-      alert('Test email failed: ' + error.text);
-    }
-  };
-
+  // Also update your EmailJS template to remove {{to_email}} reference
+  // Use this updated template:
 
   return (
     <div className="bg-white font-display text-gray-900">
@@ -568,7 +525,7 @@ function Contact() {
                           )}
                         </button>
                         <p className="mt-2 text-xs text-gray-500 text-center">
-                          You'll receive a confirmation copy at {formData.email || 'your email'}
+                          Your message will be sent directly to Bennie at fitsmartbennie@mail.com
                         </p>
                       </div>
                     </form>
